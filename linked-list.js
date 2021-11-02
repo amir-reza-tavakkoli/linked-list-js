@@ -1,0 +1,144 @@
+//Todo => fix highly-coupled Node and linkedList classes in near future
+class Node {
+    constructor(value) {
+        if (!new.target) {
+            throw new Error('must be called with new');
+        }
+        this.value = value;
+        this.next = null;
+    }
+}
+class linkedList {
+    constructor() {
+        if (!new.target) {
+            throw new Error('Must be called with new');
+        }
+        this.head = null;
+        this.tail = null;
+        this.length = 0;
+    }
+    add(node) {
+        if (!(node instanceof Node)) {
+            throw new TypeError("You can only add a Node obj");
+        }
+        this.length++;
+        if (!this.head) {
+            this.head = node;
+            this.tail = node;
+        }
+        else {
+            this.tail.next = node;
+            this.tail = node;
+        }
+        return node;
+    }
+    prepend(node) {
+        if (!(node instanceof Node)) {
+            throw new TypeError("You can only prepend a Node obj");
+        }
+        this.length++;
+        node.next = this.head;
+        this.head = node;
+        return node;
+    }
+    insert(node, index) {
+        if (!(node instanceof Node)) {
+            throw new TypeError("You can only add a Node obj");
+        }
+        if (index > this.length) {
+            throw new RangeError("Out of range index");
+        }
+        else if (this.length === index) {
+            return this.add(node);
+        }
+        else if (index === 0) {
+            return this.prepend(node);
+        }
+        this.length++;
+        const { prevNode, nextNode } = this.getAdjacantNodes(index);
+        prevNode.next = node;
+        node.next = nextNode;
+        return node;
+    }
+    getNode(index) {
+        if (index > this.length) {
+            throw new RangeError("Out of range index");
+        }
+        let { prevNode } = this.getAdjacantNodes(index);
+        return prevNode.next;
+    }
+    remove(index) {
+        if (index > this.length) {
+            throw new RangeError("Out of range index ");
+        }
+        else if (index === 0) {
+            this.length--;
+            let node = this.head;
+            this.head = this.head.next;
+            return node;
+        }
+        else if (index === this.length) {
+            this.length--;
+            let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index);
+            this.tail = prevNode;
+            return currentNode;
+        }
+        let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index);
+        let node = prevNode.next;
+        prevNode.next = currentNode.next;
+        // currentNode = null;
+        this.length--;
+        return node;
+    }
+    getSize() {
+        return this.length;
+    }
+    // flag = 0;
+    [Symbol.iterator]() {
+        let iteratorHead = this.head;
+        // if(this.flag === 1) {iteratorHead = iteratorHead.next}
+        return {
+            next: () => {
+                if (iteratorHead != null) {
+                    // this.flag = 1;
+                    let val = iteratorHead.value;
+                    iteratorHead = iteratorHead.next;
+                    return { value: val, done: false };
+                }
+                else {
+                    return { value: undefined, done: 'true' };
+                }
+            }
+        };
+    }
+    getAdjacantNodes(index) {
+        if (index > this.length) {
+            throw new RangeError("Out of range index");
+        }
+        let count = 0;
+        let prevNode = this.head;
+        let nextNode = prevNode.next;
+        while (count < index - 1) {
+            prevNode = prevNode.next;
+            nextNode = prevNode.next;
+            count++;
+        }
+        return { prevNode, nextNode };
+    }
+}
+let n1 = new Node(1);
+let n2 = new Node(2);
+let n3 = new Node(3);
+let n4 = new Node(4);
+let n5 = new Node(5);
+let l = new linkedList();
+l.add(n1);
+l.add(n2);
+l.prepend(n3);
+l.insert(n4, 1);
+l.add(n5);
+const iterator = l[Symbol.iterator]();
+console.log(iterator + ''); // "[object String Iterator]"
+console.log(iterator.next()); // { value: "h", done: false }
+console.log(iterator.next()); // { value: "i", done: false }
+console.log(iterator.next()); // { value: undefined, done: true }

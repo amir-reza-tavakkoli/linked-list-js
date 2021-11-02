@@ -1,0 +1,9 @@
+{
+    "include": [
+        "linked-list.ts"
+    ],
+    "compilerOptions": {
+        "target": "ES6",
+        "lib": [ "ES6", "ScriptHost" ]
+    },
+}
