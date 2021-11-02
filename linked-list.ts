@@ -8,7 +8,7 @@ class Node<Type> {
         if (!new.target) {
             throw new Error('must be called with new');
         }
-
+  
         this.value = value;
         this.next = null;
     }
