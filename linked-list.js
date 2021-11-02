@@ -1,4 +1,5 @@
 //Todo => fix highly-coupled Node and linkedList classes in near future
+//Todo => better organization, function level
 class Node {
     constructor(value) {
         if (!new.target) {
@@ -72,41 +73,40 @@ class linkedList {
             throw new RangeError("Out of range index ");
         }
         else if (index === 0) {
-            this.length--;
             let node = this.head;
             this.head = this.head.next;
+            this.length--;
             return node;
         }
         else if (index === this.length) {
-            this.length--;
-            let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index);
+            let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index - 1);
             this.tail = prevNode;
+            prevNode.next = null;
+            this.length--;
             return currentNode;
         }
-        let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index);
-        let node = prevNode.next;
-        prevNode.next = currentNode.next;
-        // currentNode = null;
-        this.length--;
-        return node;
+        else {
+            let { prevNode, nextNode: currentNode } = this.getAdjacantNodes(index);
+            let node = prevNode.next;
+            prevNode.next = currentNode.next;
+            this.length--;
+            return node;
+        }
     }
     getSize() {
         return this.length;
     }
-    // flag = 0;
     [Symbol.iterator]() {
         let iteratorHead = this.head;
-        // if(this.flag === 1) {iteratorHead = iteratorHead.next}
         return {
             next: () => {
                 if (iteratorHead != null) {
-                    // this.flag = 1;
                     let val = iteratorHead.value;
                     iteratorHead = iteratorHead.next;
                     return { value: val, done: false };
                 }
                 else {
-                    return { value: undefined, done: 'true' };
+                    return { value: undefined, done: true };
                 }
             }
         };
@@ -138,7 +138,7 @@ l.prepend(n3);
 l.insert(n4, 1);
 l.add(n5);
 const iterator = l[Symbol.iterator]();
-console.log(iterator + ''); // "[object String Iterator]"
-console.log(iterator.next()); // { value: "h", done: false }
-console.log(iterator.next()); // { value: "i", done: false }
-console.log(iterator.next()); // { value: undefined, done: true }
+// console.log(iterator + ''); // "[object String Iterator]"
+// console.log(iterator.next()); // { value: "h", done: false }
+// console.log(iterator.next()); // { value: "i", done: false }
+// console.log(iterator.next()); // { value: undefined, done: true }

@@ -1,4 +1,5 @@
 //Todo => fix highly-coupled Node and linkedList classes in near future
+//Todo => better organization, function level
 class Node<Type> {
     public value : Type;
     public next : Node<Type> | null;
@@ -28,7 +29,7 @@ class linkedList<Type> {
     }
 
     add(node : Node<Type>) : Node<Type> {
-        if(!(node instanceof Node)) {
+        if (!(node instanceof Node)) {
             throw new TypeError("You can only add a Node obj");
         }
 
@@ -69,7 +70,7 @@ class linkedList<Type> {
         } else if (this.length === index) {
             return this.add(node);
         } else if (index === 0) {
-            return this.prepend(node)
+            return this.prepend(node);
         }
 
         this.length++;
@@ -97,51 +98,48 @@ class linkedList<Type> {
             throw new RangeError("Out of range index ");
 
         } else if (index === 0) {
+            let node = this.head;
+            this.head = this.head.next;
+
             this.length--;
 
-            let node = this.head;
-            this.head = this.head.next
             return node;
 
         } else if (index === this.length) {
+            let { prevNode, nextNode : currentNode } = this.getAdjacantNodes(index - 1);
+            this.tail = prevNode;
+            prevNode.next = null;
             this.length--;
 
-            let { prevNode, nextNode : currentNode } = this.getAdjacantNodes(index);
-            this.tail = prevNode;
             return currentNode;
+        } else {
+            let {prevNode, nextNode : currentNode } = this.getAdjacantNodes(index);
+            let node = prevNode.next;
+            prevNode.next = currentNode.next;
+
+            this.length--;
+
+            return node;
         }
-
-        let {prevNode, nextNode : currentNode } = this.getAdjacantNodes(index);
-
-        let node = prevNode.next;
-
-        prevNode.next = currentNode.next;
-        // currentNode = null;
-
-        this.length--;
-
-        return node;
     }
 
     getSize() : number {
         return this.length;
     }
 
-    // flag = 0;
-    [Symbol.iterator](){
+    [Symbol.iterator]() {
         let iteratorHead = this.head;
-        // if(this.flag === 1) {iteratorHead = iteratorHead.next}
+
         return {
             next : () => {
                 if (iteratorHead != null) {
-                    // this.flag = 1;
                     let val = iteratorHead.value;
                     iteratorHead = iteratorHead.next;
                     return {value : val, done : false};
 
                 } else {
                 return {value : undefined, done : true};
-            }
+                }
             }
         }
     }
